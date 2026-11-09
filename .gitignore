@@ -1,0 +1,7 @@
+# Large binaries kept on disk but out of version control.
+# They are present in the working tree; see README.md §1 for what they are.
+models/
+data/
+results/softmax_maps/
+__pycache__/
+*.pyc

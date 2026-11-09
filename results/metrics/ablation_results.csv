@@ -1,0 +1,4 @@
+model,best_test_dice
+morpho_tophat_only,0.811146442401973
+morpho_dist_only,0.8017461655732967
+morpho_black_tophat_dist,0.7996472839145616

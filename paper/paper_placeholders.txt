@@ -1,0 +1,215 @@
+PAPER PLACEHOLDER REPLACEMENTS
+================================
+All values verified directly from source code, notebooks, and on-disk files.
+Items marked [MANUAL CHECK] require external verification and cannot be resolved
+from the codebase alone.
+
+======================================================================
+SECTION 2.1  Dataset -- crossing/uncertain mapping
+======================================================================
+REPLACE:
+  \PH{state how the original ``crossing'' and ``uncertain'' annotation
+  categories are mapped/merged into this 3-class target}
+
+WITH:
+  ; the original annotation additionally marks crossing (green) and
+  uncertain (white) pixels, both of which are remapped to background by
+  leaving them at the default 0 index (the class mask is initialised to
+  zero and only red- and blue-dominant pixels are overwritten)
+
+SOURCE: rgb_to_class_mask() in every ImageDataset class:
+  mask[(r > 180) & (g < 80) & (b < 80)]  = 1   # artery
+  mask[(r < 80)  & (g < 80) & (b > 180)] = 2   # vein
+  # all other pixels remain 0 (background), including green crossing
+  # and white uncertain pixels
+
+
+======================================================================
+SECTION 2.1  Dataset -- augmentation
+======================================================================
+REPLACE:
+  \PH{list augmentations actually used}
+
+WITH:
+  random horizontal flip ($p{=}0.5$), random vertical flip ($p{=}0.5$),
+  and random rotation sampled uniformly from $[-10^{\circ}, 10^{\circ}]$
+  with bilinear interpolation for the image and nearest-neighbour for the
+  mask, applied only during training. The standard U-Net baseline was
+  trained without augmentation; all other models used this scheme
+
+SOURCE: ImageDataset.__getitem__() in BiFPN_Unet_Fixed592.ipynb and all
+other fixed-592 notebooks (morpho, morpho_BiFPN). Standard U-Net uses
+ImageDataset(root=train_root, supervised=True) with no augment flag,
+defaulting to augment=False (confirmed in Unet_images_only.ipynb cell 25).
+
+
+======================================================================
+SECTION 2.4  Morpho-U-Net -- where operators enter / structuring elements
+======================================================================
+REPLACE:
+  \PH{State precisely where these enter the network: as additional input
+  channels (pre-processing) or as a refinement of the predicted map
+  (post-processing), and give the structuring-element size(s).}
+
+WITH:
+  Both transforms are applied as a \emph{parameter-free pre-processing
+  block} ({\tt MorphoPreprocessor}) before any learned layers. The raw
+  RGB input $\mathbf{x}\!\in\!\mathbb{R}^{3\times H\times W}$ is first
+  smoothed with a $5\!\times\!5$ Gaussian ($\sigma\!=\!1.0$) per channel
+  (via depth-wise convolution with a fixed, non-learned kernel). The
+  \emph{white top-hat} subtracts a morphological opening (erosion then
+  dilation, $3\!\times\!3$ structuring element) from the smoothed image,
+  isolating small bright features. The \emph{distance transform} is
+  approximated by $10$ successive erosions (same $3\!\times\!3$
+  structuring element) accumulated and normalised, encoding each vessel
+  pixel's proximity to the background. Both transforms are applied
+  depth-wise, producing three top-hat channels and three distance
+  channels; these are concatenated with the original RGB to form a
+  $9$-channel input tensor $[\mathbf{x},\,\mathrm{TH}(\mathbf{x}),\,
+  \mathrm{DT}(\mathbf{x})]\!\in\!\mathbb{R}^{9\times H\times W}$ that is
+  fed to the first encoder convolution. No parameters are added
+
+SOURCE: MorphoPreprocessor.__init__() and forward() in
+morpho/Morpho_Unet_TopHat_DistanceTransform_Fixed592.ipynb:
+  gauss_kernel=5, gauss_sigma=1.0, morph_kernel=3, threshold=0.47,
+  dist_iters=10
+  White top-hat = blurred - opening(blurred)
+  Distance transform = sum of 10 iterative erosions / 10
+  MorphoUNet concatenates [x, tophat, dist] -> 9 channels -> inc(enc_in=9)
+
+
+======================================================================
+SECTION 3.1  Implementation Details -- full block
+======================================================================
+REPLACE:
+  implemented in \PH{framework} and trained with \PH{optimizer}
+  (learning rate \PH{lr}, batch size \PH{bs}) for up to \PH{epochs} epochs;
+  the BiFPN-UNet (64--1024ch) was trained for $300$ epochs. The loss is
+  \PH{loss, e.g.\ cross-entropy / Dice / their sum}, and training used
+  \PH{hardware}.
+
+WITH:
+  implemented in PyTorch and trained on a single NVIDIA Quadro RTX 8000
+  (48\,GB VRAM). All BiFPN and Morpho variants use AdamW
+  (lr\,$=5\!\times\!10^{-4}$, weight decay $2\!\times\!10^{-4}$) with a
+  cosine-annealing schedule ($\eta_{\min}\!=\!10^{-5}$), batch size $4$,
+  and up to $150$ epochs ($300$ for BiFPN-UNet 64--1024ch); the standard
+  U-Net baseline uses Adam (lr\,$=10^{-3}$, no schedule, batch size $2$,
+  fixed $150$ epochs). The loss for BiFPN and Morpho variants is a
+  weighted sum of class-weighted cross-entropy and soft Dice over the
+  vessel classes:
+  $\mathcal{L} = 0.7\,\mathcal{L}_{\mathrm{CE}} +
+  0.3\,\mathcal{L}_{\mathrm{Dice}}$;
+  the U-Net baseline uses class-weighted cross-entropy only. Class weights
+  are computed from training-set pixel frequencies and normalised by the
+  mean vessel-class inverse frequency. For BiFPN and Morpho variants,
+  early stopping terminates training if the test-set vessel Dice does not
+  improve over $10$ consecutive evaluation checkpoints ($50$ epochs;
+  $100$ epochs for the 300-epoch run)
+
+SOURCE (BiFPN / Morpho variants): BiFPN_Unet_Fixed592.ipynb cell 23,
+Morpho_Unet_TopHat_DistanceTransform_Fixed592.ipynb training cell:
+  optimizer = AdamW(lr=5e-4, weight_decay=2e-4)
+  scheduler = CosineAnnealingLR(T_max=EPOCHS, eta_min=1e-5)
+  BATCH_SIZE = 4, EPOCHS = 150 (300 for 64-1024ch run)
+  loss = CEDiceLoss(dice_weight=0.3)
+  PATIENCE_EVALS = 10 (eval_every=5 epochs => 50 epochs patience)
+  PATIENCE_EVALS = 20 for the 300-epoch run (=> 100 epochs patience)
+
+SOURCE (Standard U-Net): Unet_images_only.ipynb cell 28:
+  optimizer = Adam(lr=1e-3, betas=(0.9,0.999), eps=1e-7)
+  no scheduler
+  BATCH_SIZE = 2, EPOCHS = 150 (fixed, no early stopping)
+  loss = CrossEntropyLoss(weight=class_weights) only
+
+SOURCE (hardware): nvidia-smi -q:
+  Product Name: Quadro RTX 8000 (x2, single GPU used per run)
+
+
+======================================================================
+SECTION 2.5  Two-stage pipeline -- parenthetical native metrics
+======================================================================
+REPLACE:
+  \PH{report stage2\_dice\_artery\_native /
+  stage2\_dice\_vein\_native if you wish to include them}
+
+WITH:
+  native artery Dice $0.7215$, vein Dice $0.7479$
+
+SOURCE: testing/Test_Fixed592_Models.ipynb, evaluate_seg_class_pipeline()
+output for the both-stages-@592 variant (both stages retrained at fixed 592):
+  stage2_dice_artery_native = 0.7215
+  stage2_dice_vein_native   = 0.7479
+
+
+======================================================================
+SECTION 4.2  Ablations -- Stage 2 native Dice (inline)
+======================================================================
+REPLACE:
+  its native artery/vein Dice \PH{insert if available} is a fairer
+  characterisation of Stage 2
+
+WITH:
+  its native artery/vein Dice ($0.7215$ / $0.7479$) is a fairer
+  characterisation of Stage 2
+
+SOURCE: same as above.
+
+
+======================================================================
+SECTION 2.1  LIOT description (shi2022liot attribution note)
+======================================================================
+After the neighbourhood-radius phrase in the LIOT sentence, add:
+
+  The base 8-channel cardinal-direction descriptors follow \cite{shi2022liot};
+  the 2 eigenvector-direction channels---sampled along the locally dominant
+  Hessian orientation---are an extension introduced in this work
+
+SOURCE: load_and_save() in the LIOT generation script; liot_ev() and
+hessian()/max_v() are NOT part of the original LIOT paper's method.
+The generation script comment reads: "Modified version of LIOT
+https://github.com/TY-Shi/LIOT"
+
+
+======================================================================
+BIBLIOGRAPHY NOTES
+======================================================================
+
+\bibitem{deng2025}
+  STATUS: citation text already correct in the .tex file.
+  The dataset at Fundus-AVSeg-prep-data matches: 100 images (70/10/20
+  split), pixel-wise A/V annotation, two native resolutions (1280x1280
+  and 2656x1992). Remove the \PH{confirm ...} comment.
+  [MANUAL CHECK] Verify that Sci. Data 12, 1298 (2025) is the exact
+  DOI for the version of the dataset you downloaded.
+
+\bibitem{shi2022liot}
+  STATUS: citation text already correct (TIP 2022, same authors as
+  GitHub repo TY-Shi/LIOT which the generation script attributes to).
+  Remove the \PH{verify ...} comment.
+  ADD the attribution note described above in Section 2.1 to clarify
+  that the 2 Hessian-eigenvector channels are NOT from this paper.
+
+\bibitem{morano2024}
+  [MANUAL CHECK] Cannot be verified from the codebase.
+  Search: "RRWNet recursive refinement retinal artery vein Morano
+  Bogunovic" to find the correct venue/year. Likely MICCAI or similar.
+  Replace the \PH{verify ...} comment once confirmed.
+
+
+======================================================================
+ITEMS FULLY RESOLVED (no further action needed)
+======================================================================
+- Dataset: Fundus-AVSeg, 70/10/20 split, 1280x1280 + 2656x1992
+- Fixed-592: bilinear resize for image, nearest for mask
+- Native regime: full resolution, batch_size=1 (no padding/tiling)
+- LIOT: 10 channels (8 cardinal + 2 eigenvector), green channel input,
+  radius ~8px, generation code confirmed
+- Soft-voting: equal weights (1/3 each), 3-class argmax, no threshold
+- Ensemble members: BiFPN-UNet(64-1024ch) + Standard U-Net + Morpho-U-Net
+- Crossing/uncertain -> background (remapped to class 0)
+- Morpho operators: preprocessing (not post-processing), 3x3 SE, 5x5 Gaussian
+
+ITEMS REQUIRING MANUAL CHECK (2 remaining)
+- Exact DOI/volume confirmation for deng2025
+- RRWNet venue/year (morano2024)
