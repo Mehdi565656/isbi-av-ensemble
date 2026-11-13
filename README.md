@@ -18,7 +18,6 @@ with the A+B+C ensemble, in French, for the PFE report).
 
 ```
 isbi-av-ensemble/
-├── docs/             written analyses backing each section of the paper
 ├── code/
 │   ├── training/     training notebooks, per-architecture (+ histories, diagnostics, logs)
 │   ├── experiments/  multi-seed training, ablations, inference, statistics
@@ -46,16 +45,16 @@ notebook under `code/training/` or its training script under `code/experiments/`
 | Table 1, A+B ensemble (0.8296) | `aggregate_metrics.csv`, row `ensemble_top2` |
 | Table 1, A+B+C ensemble (0.8320) | `aggregate_metrics.csv`, row `ensemble_top3` |
 | Table 1, A+B+{ResUNet-backbone} rows (0.8350 / 0.8364 / 0.8380) | `results/metrics/ensemble_composition_summary.csv`; rebuilt by `code/experiments/build_resunet_backbone_ensembles.py` |
-| Table 2, multi-seed mean/std/CI/Wilcoxon | `results/metrics/multiseed_summary.csv`, `multiseed_results.csv`; `code/experiments/compute_statistics.py`; `docs/02_statistical_significance.md` |
+| Table 2, multi-seed mean/std/CI/Wilcoxon | `results/metrics/multiseed_summary.csv`, `multiseed_results.csv`; `code/experiments/compute_statistics.py` |
 | Fig. 1, qualitative on 092_N | `code/figures/gen_figures_pfe_report.py` (`fig8_av_qualitative`) — French variant, A+B+C ensemble |
-| §3.3 Ensemble composition | `docs/03_morpho_ablation.md`, `aggregate_metrics.csv` |
+| §3.3 Ensemble composition | `results/metrics/ensemble_composition_summary.csv`, `aggregate_metrics.csv` |
 | §3.3 Morphological features ablation | `results/metrics/ablation_summary.csv`, `ablation_per_image_scores.csv`; `code/experiments/train_morpho_ablation.py`, `eval_morpho_ablation.py` |
-| §3.4 ResUNet-backbone ensembling, incl. Wilcoxon p-values | `results/metrics/ensemble_composition_tests.csv`; `code/experiments/build_resunet_backbone_ensembles.py`; `eval_bifpn_resunet.py`, `train_morpho_resunet.py`; `docs/09_bifpn_resunet.md` |
-| §3.5 Yule's Q, disagreement rates | `results/metrics/diversity_analysis.csv`; `docs/05_diversity_analysis.md` |
-| §3.5 Same-architecture control (0.8203) | `docs/02_statistical_significance.md` §same-arch, `docs/05_diversity_analysis.md` §5.4; checkpoints in `models/seed01,07,13/bifpn_64to1024.pth` |
-| Checkpoint-selection limitation (§4) | `docs/04_model_selection_audit.md`, `code/experiments/04_val_selection_check.py` |
-| Inference cost (§4 limitation) | `results/metrics/inference_cost.csv`, `docs/07_inference_cost.md` |
-| GAVE2 future work (§4) | `docs/06_second_dataset.md` (data/models themselves left in `../MICAI/`) |
+| §3.4 ResUNet-backbone ensembling, incl. Wilcoxon p-values | `results/metrics/ensemble_composition_tests.csv`; `code/experiments/build_resunet_backbone_ensembles.py`, `eval_bifpn_resunet.py`, `train_morpho_resunet.py` |
+| §3.5 Yule's Q, disagreement rates | `results/metrics/diversity_analysis.csv`; computed in `code/experiments/run_inference.py` |
+| §3.5 Same-architecture control (0.8203) | `code/experiments/compute_statistics.py` (same-arch section); checkpoints in `models/seed01,07,13/bifpn_64to1024.pth` |
+| Checkpoint-selection limitation (§4) | `code/experiments/04_val_selection_check.py` |
+| Inference cost (§4 limitation) | `results/metrics/inference_cost.csv` |
+| GAVE2 future work (§4) | not part of this repository (kept in the author's separate `MICAI/` workspace) |
 
 ## 3. Checkpoint naming
 
@@ -117,5 +116,5 @@ code/experiments/finalize.sh             # orchestrates eval → statistics → 
 - 3 classes: 0 background, 1 artery, 2 vein; crossing (green) and uncertain (white) pixels map to background.
 - Split: 70 train / 10 val / 20 test (test IDs 081–100).
 - A/V Dice and A/V IoU are the mean of the artery and vein scores, background excluded, averaged over the 20 test images.
-- Note the documentation under `docs/` predates the ISBI rewrite: it carries the earlier OMIA
-  title and framing. Its numbers match the submitted paper; its narrative does not always.
+- Every number in `results/metrics/` was produced under this protocol; the scripts that
+  generated each CSV are named in the map above.
