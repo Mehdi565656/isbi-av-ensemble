@@ -190,42 +190,43 @@ CKPTS = {
     'bifpn_resunet_dual': (CKPT_DIR / 'best_model_bifpn_resunet_dual_592.pth', BiFPNResUNetDual),
 }
 
-test_ds = TestDataset(TEST_ROOT)
-results = []
+if __name__ == '__main__':
+    test_ds = TestDataset(TEST_ROOT)
+    results = []
 
-for name, (ckpt_path, ModelCls) in CKPTS.items():
-    print(f'\nLoading {name} ({ModelCls.__name__}) ...')
-    m = ModelCls(in_channels=3, num_classes=3, base_ch=64, depth=5,
-                 bifpn_ch=64, num_bifpn_layers=1).to(device)
-    try:
-        m.load_state_dict(torch.load(ckpt_path, map_location=device))
-        print(f'  Loaded OK. Params: {sum(p.numel() for p in m.parameters()):,}')
-    except Exception as e:
-        print(f'  LOAD FAILED: {e}')
-        continue
+    for name, (ckpt_path, ModelCls) in CKPTS.items():
+        print(f'\nLoading {name} ({ModelCls.__name__}) ...')
+        m = ModelCls(in_channels=3, num_classes=3, base_ch=64, depth=5,
+                     bifpn_ch=64, num_bifpn_layers=1).to(device)
+        try:
+            m.load_state_dict(torch.load(ckpt_path, map_location=device))
+            print(f'  Loaded OK. Params: {sum(p.numel() for p in m.parameters()):,}')
+        except Exception as e:
+            print(f'  LOAD FAILED: {e}')
+            continue
 
-    df = eval_model(m, test_ds)
-    df['model'] = name
-    results.append(df)
+        df = eval_model(m, test_ds)
+        df['model'] = name
+        results.append(df)
 
-    vd = df['vessel_dice'].mean()
-    vi = df['vessel_iou'].mean()
-    ad = df['dice_c1'].mean()
-    wd = df['dice_c2'].mean()
-    print(f'  Vessel Dice={vd:.4f}  IoU={vi:.4f}  Artery={ad:.4f}  Vein={wd:.4f}')
+        vd = df['vessel_dice'].mean()
+        vi = df['vessel_iou'].mean()
+        ad = df['dice_c1'].mean()
+        wd = df['dice_c2'].mean()
+        print(f'  Vessel Dice={vd:.4f}  IoU={vi:.4f}  Artery={ad:.4f}  Vein={wd:.4f}')
 
-if results:
-    out_df = pd.concat(results, ignore_index=True)
-    out_path = BASE / 'paper_fixes' / 'data' / 'bifpn_resunet_scores.csv'
-    out_df.to_csv(out_path, index=False)
-    print(f'\nSaved to {out_path}')
+    if results:
+        out_df = pd.concat(results, ignore_index=True)
+        out_path = BASE / 'paper_fixes' / 'data' / 'bifpn_resunet_scores.csv'
+        out_df.to_csv(out_path, index=False)
+        print(f'\nSaved to {out_path}')
 
-    # Comparison with existing models
-    existing = pd.read_csv(BASE / 'paper_fixes' / 'data' / 'model_summary.csv')
-    print('\n--- Comparison with paper models ---')
-    print(existing[['model','vessel_dice','artery_dice','vein_dice']].to_string(index=False, float_format='%.4f'))
-    print('\n--- BiFPN-ResUNet variants ---')
-    for df in results:
-        m = df['model'].iloc[0]
-        print(f"  {m}: Dice={df['vessel_dice'].mean():.4f}  "
-              f"Art={df['dice_c1'].mean():.4f}  Vein={df['dice_c2'].mean():.4f}")
+        # Comparison with existing models
+        existing = pd.read_csv(BASE / 'paper_fixes' / 'data' / 'model_summary.csv')
+        print('\n--- Comparison with paper models ---')
+        print(existing[['model','vessel_dice','artery_dice','vein_dice']].to_string(index=False, float_format='%.4f'))
+        print('\n--- BiFPN-ResUNet variants ---')
+        for df in results:
+            m = df['model'].iloc[0]
+            print(f"  {m}: Dice={df['vessel_dice'].mean():.4f}  "
+                  f"Art={df['dice_c1'].mean():.4f}  Vein={df['dice_c2'].mean():.4f}")
