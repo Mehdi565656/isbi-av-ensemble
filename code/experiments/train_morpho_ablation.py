@@ -3,7 +3,8 @@ Task 3: Morphological-feature ablation.
 Trains two additional Morpho-U-Net variants:
   (a) top-hat only (6-channel input: RGB + tophat×3)
   (b) distance-transform only (6-channel input: RGB + dist×3)
-  (c) black top-hat only (response to reviewer's concern about vessel brightness)
+  (c) black top-hat only (vessels are darker than the background, so the black
+      top-hat is the a priori natural choice -- tested here against the white one)
 Everything else identical to the existing Morpho-U-Net (seed=42, 300 epochs, etc.)
 """
 
