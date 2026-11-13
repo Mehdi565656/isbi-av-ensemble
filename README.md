@@ -4,8 +4,13 @@ Repository assembled for the ISBI submission by Mehdi Feki, Noémie Debroux, Ant
 (Université Clermont Auvergne, Clermont Auvergne INP, CNRS, Institut Pascal).
 
 Every file here is a **copy** of material that already existed in `/home/mefeki/Bureau/work`;
-nothing was moved or deleted. Files the paper needs but that could not be found on disk are
-listed in [MISSING_FILES.md](MISSING_FILES.md).
+nothing was moved or deleted.
+
+Two things the paper relies on were never found on disk and are **not** in this repository:
+the LaTeX/BibTeX source of the submission, and the exact script that rendered Figure 1
+(panel (d) is the A+B+BiFPN-ResUNet ensemble; the closest script here,
+`code/figures/gen_figures_pfe_report.py::fig8_av_qualitative`, renders the same test image
+with the A+B+C ensemble, in French, for the PFE report).
 
 ---
 
@@ -20,13 +25,17 @@ isbi-av-ensemble/
 │   └── figures/      figure-generation scripts
 ├── results/
 │   ├── metrics/      all CSVs (per-image, aggregate, multi-seed, diversity, cost)
-│   ├── softmax_maps/ per-model float16 softmax maps on the 20 test images
+│   ├── softmax_maps/ float16 softmax maps on the 20 test images, 9 models   [not in git]
 │   └── figures/      rendered figures
-├── models/           24 checkpoints (seed 42, seeds 1/7/13, ablations, ResUNet-backbone)
-└── data/             Fundus-AVSeg, preprocessed to the fixed-592 protocol (70/10/20)
+├── models/           24 checkpoints (seed 42, seeds 1/7/13, ablations, ResUNet)  [not in git]
+└── data/             Fundus-AVSeg at the fixed-592 protocol (70/10/20)           [not in git]
 ```
 
-Total size ≈ 5.1 GB (2.4 GB checkpoints, 2.5 GB dataset).
+The working tree is ≈ 5.1 GB, but `models/`, `data/` and `results/softmax_maps/` are
+gitignored, so a clone is ≈ 11 MB of code, documentation, metrics and figures. The
+checkpoints and the preprocessed dataset have to be obtained separately, or rebuilt: the
+dataset comes from Deng et al.'s open-access release, and every model has its training
+notebook under `code/training/` or its training script under `code/experiments/`.
 
 ## 2. Paper → file map
 
