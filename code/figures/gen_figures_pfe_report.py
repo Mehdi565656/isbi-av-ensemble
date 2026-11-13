@@ -20,7 +20,7 @@ plt.rcParams['font.family'] = 'serif'
 plt.rcParams['font.size'] = 10
 plt.rcParams['axes.linewidth'] = 0.8
 
-BASE = Path('/home/mefeki/Bureau/work')
+BASE = Path('/path/to/workspace')
 OUT  = BASE / 'pfe_report' / 'images'
 OUT.mkdir(parents=True, exist_ok=True)
 

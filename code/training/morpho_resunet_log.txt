@@ -64,4 +64,4 @@ MorphoResUNet params: 32,440,323
   epoch 300/300  loss=0.0998  test_dice=0.8041  (best=0.8070)
 
 Morpho-ResUNet: best test Dice = 0.8070
-Checkpoint: /home/mefeki/Bureau/work/paper_fixes/models/morpho_resunet.pth
+Checkpoint: /path/to/workspace/paper_fixes/models/morpho_resunet.pth

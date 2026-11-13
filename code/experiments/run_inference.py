@@ -19,7 +19,7 @@ from torch.utils import data as tdata
 warnings.filterwarnings("ignore")
 
 # ─── Paths ────────────────────────────────────────────────────────────────────
-BASE        = Path('/home/mefeki/Bureau/work')
+BASE        = Path('/path/to/workspace')
 TEST_ROOT   = BASE / 'Fundus-AVSeg-prep-data' / 'test'
 OUT_DATA    = BASE / 'paper_fixes' / 'data'
 OUT_SOFTMAX = OUT_DATA / 'softmax_maps'

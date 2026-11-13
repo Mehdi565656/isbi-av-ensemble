@@ -19,7 +19,7 @@ from run_inference import (rgb_to_class_mask, NUM_CLASSES, VESSEL_CLASSES, NEW_S
 from train_multiseed import TestDataset
 from train_morpho_ablation import MorphoUNetTopHatOnly, MorphoUNetDistOnly, MorphoUNetBlackTopHat
 
-BASE    = Path('/home/mefeki/Bureau/work')
+BASE    = Path('/path/to/workspace')
 OUT_DIR = BASE / 'paper_fixes' / 'models' / 'morpho_ablation'
 TEST_ROOT = BASE / 'Fundus-AVSeg-prep-data' / 'test'
 

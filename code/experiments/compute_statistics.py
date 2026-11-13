@@ -22,7 +22,7 @@ from run_inference import (StandardUNet, MorphoUNet, BiFPNUNet, ResUNet,
                             rgb_to_class_mask, NUM_CLASSES, VESSEL_CLASSES, NEW_SIZE, device)
 from train_multiseed import TestDataset, MODEL_CONFIGS
 
-BASE       = Path('/home/mefeki/Bureau/work')
+BASE       = Path('/path/to/workspace')
 TEST_ROOT  = BASE / 'Fundus-AVSeg-prep-data' / 'test'
 NEW_SEEDS  = [1, 7, 13]
 

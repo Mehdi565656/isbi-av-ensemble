@@ -20,8 +20,8 @@ Usage
     python export_softmax_resunet_backbone.py --force      # overwrite existing maps
     python export_softmax_resunet_backbone.py --device cpu # when the GPU is busy
 
-Paths are resolved relative to this repository, not to the original
-/home/mefeki/Bureau/work workspace. Override with --repo if needed.
+Paths are resolved relative to this repository, not to the original working
+directory the older scripts assume. Override with --repo if needed.
 """
 
 import argparse

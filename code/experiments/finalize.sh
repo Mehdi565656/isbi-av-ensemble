@@ -3,7 +3,7 @@
 # Execute this AFTER train_multiseed.py and train_morpho_ablation.py complete.
 
 set -e
-BASE=/home/mefeki/Bureau/work
+BASE=/path/to/workspace
 cd "$BASE"
 
 echo "=== Step 1: Morpho ablation evaluation ==="

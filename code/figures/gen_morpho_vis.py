@@ -22,7 +22,7 @@ from PIL import Image
 sys.path.insert(0, str(Path(__file__).parent))
 from run_inference import MorphoPreprocessor, NEW_SIZE, device
 
-BASE    = Path('/home/mefeki/Bureau/work')
+BASE    = Path('/path/to/workspace')
 TEST_DIR = BASE / 'Fundus-AVSeg-prep-data' / 'test' / 'images'
 FIG_DIR  = BASE / 'paper_fixes' / 'figures'
 FIG_DIR.mkdir(parents=True, exist_ok=True)

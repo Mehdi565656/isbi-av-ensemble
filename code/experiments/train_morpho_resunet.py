@@ -21,7 +21,7 @@ from run_inference import (MorphoPreprocessor, rgb_to_class_mask,
 from train_multiseed import (TrainDataset, TestDataset, CEDiceLoss,
                               compute_class_weights, vessel_dice)
 
-BASE      = Path('/home/mefeki/Bureau/work')
+BASE      = Path('/path/to/workspace')
 TRAIN_ROOT = BASE / 'Fundus-AVSeg-prep-data' / 'train'
 TEST_ROOT  = BASE / 'Fundus-AVSeg-prep-data' / 'test'
 OUT_DIR    = BASE / 'paper_fixes' / 'models'

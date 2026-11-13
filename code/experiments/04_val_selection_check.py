@@ -19,7 +19,7 @@ from run_inference import (StandardUNet, MorphoUNet, BiFPNUNet, MorphoBiFPNUNet,
                            NUM_CLASSES, VESSEL_CLASSES, NEW_SIZE, device,
                            dice_iou_per_class, rgb_to_class_mask)
 
-BASE     = Path('/home/mefeki/Bureau/work')
+BASE     = Path('/path/to/workspace')
 VAL_ROOT = BASE / 'Fundus-AVSeg-prep-data' / 'val'
 TEST_ROOT= BASE / 'Fundus-AVSeg-prep-data' / 'test'
 

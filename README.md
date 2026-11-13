@@ -3,8 +3,9 @@
 Repository assembled for the ISBI submission by Mehdi Feki, Noémie Debroux, Antoine Vacavant
 (Université Clermont Auvergne, Clermont Auvergne INP, CNRS, Institut Pascal).
 
-Every file here is a **copy** of material that already existed in `/home/mefeki/Bureau/work`;
-nothing was moved or deleted.
+Every file here is a **copy** of material from the authors' original working directory;
+nothing was moved or deleted. That directory is written as `/path/to/workspace` throughout
+this repository — substitute your own path.
 
 Two things the paper relies on were never found on disk and are **not** in this repository:
 the LaTeX/BibTeX source of the submission, and the exact script that rendered Figure 1
@@ -83,10 +84,11 @@ notebook under `code/training/` or its training script under `code/experiments/`
 
 ## 4. Reproducing the numbers
 
-Most scripts in `code/experiments/` use absolute paths rooted at `/home/mefeki/Bureau/work`
-(e.g. `Fundus-AVSeg-prep-data/`, `paper_fixes/`). To run them from inside this repo, repoint
-`BASE` at the top of each script to this directory and adjust `data/fundus-avseg-592` and
-`results/` accordingly. The two scripts added to rebuild the Sec. 3.4 ensembles
+Most scripts in `code/experiments/` use absolute paths rooted at the placeholder
+`/path/to/workspace` (and expect `Fundus-AVSeg-prep-data/` and `paper_fixes/` beneath it).
+Set `BASE` at the top of each script to a real directory before running one, and adjust
+`data/fundus-avseg-592` and `results/` accordingly. The same placeholder appears in the
+training notebooks' dataset paths. The two scripts added to rebuild the Sec. 3.4 ensembles
 (`export_softmax_resunet_backbone.py`, `build_resunet_backbone_ensembles.py`) already resolve
 every path relative to this repository and take `--repo` to override it.
 
@@ -118,3 +120,12 @@ code/experiments/finalize.sh             # orchestrates eval → statistics → 
 - A/V Dice and A/V IoU are the mean of the artery and vein scores, background excluded, averaged over the 20 test images.
 - Every number in `results/metrics/` was produced under this protocol; the scripts that
   generated each CSV are named in the map above.
+
+## 6. License
+
+The code, scripts and results in this repository are released under the MIT License
+(see [LICENSE](LICENSE)).
+
+This does **not** cover the Fundus-AVSeg data itself, which is a third-party open-access
+release by Deng et al., *Sci. Data* 12:1298 (2025) and carries its own license. The dataset
+is not redistributed here.

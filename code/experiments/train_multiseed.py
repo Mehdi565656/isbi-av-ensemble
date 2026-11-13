@@ -23,7 +23,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 from run_inference import (StandardUNet, MorphoUNet, BiFPNUNet, ResUNet,
                             rgb_to_class_mask, NUM_CLASSES, VESSEL_CLASSES, NEW_SIZE, device)
 
-BASE       = Path('/home/mefeki/Bureau/work')
+BASE       = Path('/path/to/workspace')
 TRAIN_ROOT = BASE / 'Fundus-AVSeg-prep-data' / 'train'
 TEST_ROOT  = BASE / 'Fundus-AVSeg-prep-data' / 'test'
 OUT_DIR    = BASE / 'paper_fixes' / 'models'

@@ -13,8 +13,8 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
-FIG_DIR  = Path('/home/mefeki/Bureau/work/paper_fixes/figures')
-DATA_DIR = Path('/home/mefeki/Bureau/work/paper_fixes/data')
+FIG_DIR  = Path('/path/to/workspace/paper_fixes/figures')
+DATA_DIR = Path('/path/to/workspace/paper_fixes/data')
 FIG_DIR.mkdir(parents=True, exist_ok=True)
 
 df = pd.read_csv(DATA_DIR / 'per_image_scores.csv')

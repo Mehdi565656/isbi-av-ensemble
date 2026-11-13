@@ -15,7 +15,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 from run_inference import rgb_to_class_mask, NUM_CLASSES, VESSEL_CLASSES, NEW_SIZE, device
 from train_multiseed import TestDataset
 
-BASE = Path('/home/mefeki/Bureau/work')
+BASE = Path('/path/to/workspace')
 CKPT_DIR = BASE / 'multi_step_back' / 'BiFPN' / 'models'
 TEST_ROOT = BASE / 'Fundus-AVSeg-prep-data' / 'test'
 
